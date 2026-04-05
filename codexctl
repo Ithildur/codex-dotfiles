@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./codexctl init
+  ./codexctl install
+  ./codexctl render-config
+  ./codexctl sync
+  ./codexctl publish
+  ./codexctl commit [--push] ["commit message"]
+  ./codexctl install-cron [sync|publish|none]
+EOF
+}
+
+main() {
+  local cmd="${1:-}"
+
+  case "$cmd" in
+    init|install|render-config|sync|publish|commit|install-cron)
+      shift
+      exec "$SCRIPT_DIR/bootstrap/$cmd.sh" "$@"
+      ;;
+    -h|--help|help|"")
+      usage
+      ;;
+    *)
+      echo "Unknown command: $cmd" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
